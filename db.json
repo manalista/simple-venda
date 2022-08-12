@@ -1,0 +1,7 @@
+{
+    "host":"10.18.130.59"
+    , "port":5432
+    , "user":"vendas"
+    , "password":"vendas"
+    , "database":"vendas"
+}

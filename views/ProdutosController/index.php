@@ -1,0 +1,2 @@
+<h4>index <?= $nome?></h4>
+<?= $nome ?>

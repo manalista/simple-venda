@@ -1,0 +1,18 @@
+{
+    "produtos": {
+        "classController": "Produtos"
+        , "path": {
+            "/" : "index"
+            , "/novo" : "cadastro"
+            , "editar" : "cadastro"
+        }
+    }
+    , "tipos-produtos": {
+        "classController": "TiposProdutos"
+        , "path": {
+            "/" : "index"
+            , "/novo" : "cadastro"
+            , "editar" : "cadastro"
+        }
+    }
+}
