@@ -9,8 +9,12 @@ class ProdutosController extends Controller{
     }
     
     public function index() {
-        $this->produto->lista();
-        $this->render(['nome'=> 'Marcos']);
+        $this->render();
+    }
+
+    public function listaJson(){
+        $lista = $this->produto->lista();
+        $this->json(['produtos'=> $lista]);
     }
 
     public function novo(){

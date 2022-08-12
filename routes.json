@@ -1,18 +1,26 @@
 {
-    "produtos": {
+    "/":{
+        "classController": "Application"
+        , "path": {
+            "" : "index"
+        }
+    }
+    , "produtos": {
         "classController": "Produtos"
         , "path": {
             "/" : "index"
-            , "/novo" : "cadastro"
+            , "novo" : "cadastro"
             , "editar" : "cadastro"
+            , "lista" : "listaJson"
         }
     }
     , "tipos-produtos": {
         "classController": "TiposProdutos"
         , "path": {
             "/" : "index"
-            , "/novo" : "cadastro"
+            , "novo" : "cadastro"
             , "editar" : "cadastro"
+            , "lista" : "listaJson"
         }
     }
 }

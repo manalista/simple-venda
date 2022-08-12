@@ -1,9 +1,20 @@
 <?php 
 
-class TiposProdutosController {
+class TiposProdutosController extends Controller{
+
+    private $tipoProduto;
+
+    public function __construct() {
+        $this->tipoProduto = new TipoProduto();
+    }
     
     public function index() {
-        echo "Listagem de tipos de produtos";
+        $this->render();
+    }
+
+    public function listaJson(){
+        $lista = $this->tipoProduto->lista();
+        $this->json(['tiposProdutos'=> $lista]);
     }
 
     public function novo(){

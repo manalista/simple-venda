@@ -11,12 +11,14 @@ class DB{
                 $$var = $value;
             }
         }else{
-            die("Configurações de banco de dados não encontradas.");
+            die("Database config not found.");
         }
         $this->conexao = new PDO("pgsql:host=$host;port=$port;dbname=$database;user=$user;password=$password");
     }
-    public function consulta(){
-
+    
+    public function consulta($query){
+        $query = $this->conexao->query($query);
+        return $query->fetchAll(PDO::FETCH_CLASS);
     }
 
     public function executa(){
