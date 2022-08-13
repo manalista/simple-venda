@@ -2,7 +2,7 @@
     "/":{
         "classController": "Application"
         , "path": {
-            "" : "index"
+            "/" : "index"
         }
     }
     , "produtos": {

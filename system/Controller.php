@@ -22,6 +22,7 @@ class Controller{
     }
 
     public function render($dados = [], $view = ''){
+        $viewHelper = new ViewHelper();
         $chamador =  debug_backtrace()[1];
         $controllerName = $chamador['class'];
         if(!$view){
@@ -36,6 +37,12 @@ class Controller{
         require_once dirname(dirname(__FILE__)). $viewFIle;
         $contentView = ob_get_contents();
         ob_get_clean();
+        $tags = $viewHelper->getTags($contentView);
+        foreach($tags as $tag){
+            $bloco = $viewHelper->getBloco($tag, $contentView);
+            $contentView = $viewHelper->removeBloco($tag, $bloco, $contentView);
+            $$tag = $bloco;
+        }
         require_once dirname(dirname(__FILE__)). "/views/template.php";
     }
 
