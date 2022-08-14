@@ -13,7 +13,7 @@ class Model{
         $this->whereContent = null;
         $this->orderContent = null;
         $this->alias = "";
-        $this->dmlQueryBuilder = new dmlQueryBuilder();
+        $this->dmlQueryBuilder = new DMLQueryBuilder();
    }
 
     public function select($fields = "*"){

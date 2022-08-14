@@ -12,4 +12,9 @@ class Produto extends Model{
                     ->order('nome')
                     ->fetch();
     }
+
+    public function inserir($dados){
+        $dadosSalvos = $this->inserir($dados, $this->table);
+        return $dadosSalvos;
+    }
 }

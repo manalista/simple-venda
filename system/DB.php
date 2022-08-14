@@ -21,8 +21,16 @@ class DB{
         return $query->fetchAll(PDO::FETCH_CLASS);
     }
 
-    public function executa(){
-
+    public function executa($query){
+        $prepared =  $this->conexao->prepare($query);
+        $result = $prepared->execute();
+        if(!$result){
+            return null;
+        }
+        if(strpos($query, "INSERT") !== false){
+            return $prepared->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return true;
     }
 
 

@@ -13,7 +13,8 @@ class TipoProduto extends Model{
                     ->fetch();
     }
     
-    public function novo($dados){
-        return $this->insert($this->table, $dados);
+    public function inserir($dados){
+        $dadosSalvos = $this->insert($this->table, $dados);
+        return $dadosSalvos;
     }
 }

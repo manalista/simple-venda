@@ -1,6 +1,10 @@
-<?php $titulo = "Produtos";
-var_dump($search);
-?>
+#{titulo}Produtos#{/titulo}
+
+#{botoes}
+<div class="btn-group me-2">
+    <button type="button" class="btn btn-sm btn-outline-secondary" id="bt-novo">Novo Produto</button>
+</div>
+#{/botoes}
 
 <div class="table-responsive">
     <table class="table table-striped table-sm">

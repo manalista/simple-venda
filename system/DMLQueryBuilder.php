@@ -12,11 +12,11 @@ class DMLQueryBuilder{
 
     public function __construct() {
         $this->query = "";
-        $this->fields = null;
+        $this->fields = [];
         $this->fromString = "";
-        $this->whereContent = null;
-        $this->orderContent = null;
-        $this->currentOperator = null;
+        $this->whereContent = [];
+        $this->orderContent = [];
+        $this->currentOperator = [];
         $this->alias = "";
    }
 
@@ -127,8 +127,23 @@ class DMLQueryBuilder{
         return $this;
     }
 
-    public function getInsertQuery(){
-        
+    public function getInsertQuery($table, $data){
+        $types = [
+            'integer' => ''
+            , 'string' => "'"
+            , 'boolean' => ''
+            , 'double' => ''
+        ];
+        $fields = [];
+        $values = [];
+        foreach($data as $field => $value){
+            $type = gettype($value);
+            $fields[] = $field;
+            $values[] = $types[$type] . $value . $types[$type];
+        }
+        $sFields = implode(",", $fields);
+        $sValues = implode(",", $values);
+        return "INSERT INTO {$table} ({$sFields}) VALUES ({$sValues}) returning *";
     }
 
     public function getSelectQuery(){

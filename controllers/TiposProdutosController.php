@@ -20,6 +20,8 @@ class TiposProdutosController extends Controller{
     public function novo(){
         $filters = ['descricao' => FILTER_SANITIZE_ENCODED
         , 'valor_imposto' =>  FILTER_VALIDATE_FLOAT];
-        $this->json($this->filterPost($filters));
+        $dados = $this->filterPost($filters);
+        $record = $this->tipoProduto->inserir($dados);
+        $this->json($record);
     }
 }

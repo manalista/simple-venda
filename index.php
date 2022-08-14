@@ -2,9 +2,27 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$route = $_SERVER['REQUEST_URI'];
-
 define("ROOT_FILES", dirname(__FILE__));
+
+spl_autoload_register(function ($class) {
+    $look_in = [
+        'controllers'
+        , 'models'
+        , 'system'
+    ];
+    foreach($look_in as $folder){
+        if(file_exists("{$folder}/{$class}.php")){
+            require_once "{$folder}/{$class}.php";
+            break;
+        }
+    }
+    if(!class_exists($class)){
+        error_log("Class {$class} not found");
+        http_response_code(404);
+        require_once ROOT_FILES."/views/http/404.php";
+        exit(404);
+    }
+});
 
 if(file_exists('routes.json')){
     $routes = json_decode(file_get_contents('routes.json'), true);
@@ -12,7 +30,9 @@ if(file_exists('routes.json')){
     die("Rotas não encontradas");
 }
 
+$route = $_SERVER['REQUEST_URI'];
 $http_method = $_SERVER['REQUEST_METHOD'];
+
 $pathController = "/";
 if($route !== "/"){
     $pos = strpos($route, "/", 1);
@@ -30,25 +50,6 @@ if(isset($rotasController[$http_method][$nameAction]) ?? false){
 }else{
     $action = 'error404';
 }
-
-spl_autoload_register(function ($class) {
-    $look_in = [
-        'controllers'
-        , 'models'
-        , 'system'
-    ];
-    foreach($look_in as $folder){
-        if(file_exists("{$folder}/{$class}.php")){
-            require_once "{$folder}/{$class}.php";
-            break;
-        }
-    }
-    if(!class_exists($class)){
-        http_response_code(404);
-        require_once ROOT_FILES."/views/http/404.php";
-        exit(404);
-    }
-});
 
 $controllerClass = $controller . 'Controller';
 $controllerFound = new $controllerClass();
