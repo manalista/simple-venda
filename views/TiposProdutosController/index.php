@@ -43,14 +43,20 @@
 
 <div id="novo-tipo-produto">
     <form method="post" id="form-tipo-produto" action="/tipos-produtos/novo">
-        <input type="hidden" name="tipo-produto-id" value="">
+        <input type="hidden" name="tipoProdutoId" value="">
         <div class="mb-3">
             <label for="descricao" class="form-label">Descriçao</label>
-            <input type="text" required class="form-control" id="descricao" placeholder="Descriçao do tipo de produtos">
+            <input type="text" required class="form-control"
+                    name="descricao"
+                     id="descricao" placeholder="Descriçao do tipo de produtos">
         </div>
         <div class="mb-3">
             <label for="imposto" class="form-label">Imposto</label>
-            <input type="number" required class="form-control" id="imposto" placeholder="Alícota de imposto para este tipo de produtos">
+            <input type="number" required
+                    class="form-control" id="imposto"
+                    name="imposto" 
+                    min="0" step="0.01"
+                    placeholder="Alícota de imposto para este tipo de produtos">
         </div>
 
         <div class="mb-3">
@@ -97,7 +103,12 @@
 
     btSalvar.addEventListener('click', (e)=>{
         e.preventDefault();
-
+        dados = {
+            id: formulario.tipoProdutoId.value,
+            descricao: formulario.descricao.value,
+            valor_imposto: formulario.imposto.value
+        };
+        
     });
 
     btCancelar.addEventListener('click', () => {

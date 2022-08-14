@@ -12,4 +12,8 @@ class TipoProduto extends Model{
                     ->order('descricao')
                     ->fetch();
     }
+    
+    public function novo($dados){
+        return $this->insert($this->table, $dados);
+    }
 }

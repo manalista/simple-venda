@@ -12,3 +12,11 @@ function criaLinhas(tiposProdutos, callbackLinha){
     }
 }
 
+function sendData(url, data, callback){
+    fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(dados => callback(dados))
+}
