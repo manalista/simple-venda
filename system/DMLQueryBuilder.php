@@ -1,6 +1,6 @@
 <?php 
 
-class DDLQueryBuilder{
+class DMLQueryBuilder{
 
     private $query;
     private $alias;
@@ -125,6 +125,10 @@ class DDLQueryBuilder{
     public function between($field, $lower, $higher){
         $this->whereContent[]['between'] = "{$field} BETWEEN {$lower} AND {$higher}";
         return $this;
+    }
+
+    public function getInsertQuery(){
+        
     }
 
     public function getSelectQuery(){

@@ -1,26 +1,41 @@
 {
     "/":{
         "classController": "Application"
-        , "path": {
+        , "GET": {
             "/" : "index"
         }
     }
     , "produtos": {
         "classController": "Produtos"
-        , "path": {
+        ,
+        "GET": {
             "/" : "index"
-            , "novo" : "cadastro"
-            , "editar" : "cadastro"
             , "lista" : "listaJson"
+        },
+        "POST":{
+            "/": "novo"
+        }, 
+        "PUT":{
+            "/": "editar"
+        },
+        "DELETE":{
+            "/": "excluir"
         }
     }
     , "tipos-produtos": {
-        "classController": "TiposProdutos"
-        , "path": {
+        "classController": "TiposProdutos",
+        "GET": {
             "/" : "index"
-            , "novo" : "cadastro"
-            , "editar" : "cadastro"
             , "lista" : "listaJson"
+        },
+        "POST":{
+            "/": "novo"
+        }, 
+        "PUT":{
+            "/": "editar"
+        },
+        "DELETE":{
+            "/": "excluir"
         }
     }
 }
