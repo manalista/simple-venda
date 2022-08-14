@@ -1,5 +1,6 @@
 <?php 
-
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 $route = $_SERVER['REQUEST_URI'];
 
@@ -11,19 +12,24 @@ if(file_exists('routes.json')){
     die("Rotas não encontradas");
 }
 
-if($route == "/"){
-    $pathController = $route;
-}else{
-    [$path, $queryString]  = explode('?', $route);
-    [$pathController, $nameAction] = explode('/', mb_substr($path, 1));
+$http_method = $_SERVER['REQUEST_METHOD'];
+$pathController = "/";
+if($route !== "/"){
+    $pos = strpos($route, "/", 1);
+    $pathController = $pos ? substr($route, 1, ($pos-1)) : substr($route, 1);
+    $nameAction = "/";
+    if(strpos($route,"/",1) !== false){
+        $nameAction = substr($route, $pos+1);
+    }
 }
 
-if(!$nameAction){
-    $nameAction = '/';
-}
-
-$action = $routes[$pathController]['path'][$nameAction];
 $controller = $routes[$pathController]['classController'];
+$rotasController = $routes[$pathController];
+if(isset($rotasController[$http_method][$nameAction]) ?? false){
+    $action = $rotasController[$http_method][$nameAction];
+}else{
+    $action = 'error404';
+}
 
 spl_autoload_register(function ($class) {
     $look_in = [

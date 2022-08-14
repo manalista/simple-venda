@@ -20,7 +20,7 @@ class Controller{
         header("Location: {$addres}");
         exit(0);
     }
-
+    
     public function render($dados = [], $view = ''){
         $viewHelper = new ViewHelper();
         $chamador =  debug_backtrace()[1];
@@ -49,5 +49,13 @@ class Controller{
     public function json($dados){
         header('Content-Type: application/json');
         echo json_encode($dados);
+    }
+
+    public function filterPost($filters){
+        return filter_var_array($_POST, $filters);
+    }
+
+    public function error404(){
+        die("404");
     }
 }

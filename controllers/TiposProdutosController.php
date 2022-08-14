@@ -18,6 +18,8 @@ class TiposProdutosController extends Controller{
     }
 
     public function novo(){
-        echo "Formulário de novo tipo de produto";
+        $filters = ['descricao' => FILTER_SANITIZE_ENCODED
+        , 'valor_imposto' =>  FILTER_VALIDATE_FLOAT];
+        $this->json($this->filterPost($filters));
     }
 }
