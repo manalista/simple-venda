@@ -3,6 +3,7 @@
 #{botoes}
 <div class="btn-group me-2">
     <button type="button" class="btn btn-sm btn-outline-secondary" id="bt-novo">Nova venda</button>
+    <button type="button" class="btn btn-sm btn-outline-secondary d-none" id="bt-voltar">Voltar</button>
 </div>
 #{/botoes}
 
@@ -155,14 +156,17 @@
     let itensVenda;
     const urlLista = '/vendas/lista';
     const urlDetalhesVenda = '/vendas/show';
-    const urlNovo = '/vendas/novo';
+    const urlNovo = '/vendas/nova';
     const urlExcluir = '/vendas/excluir';
+    const urlExcluirItem = '/vendas/excluir-item';
     const urlEditar = '/vendas/editar';
     const urlListaProdutos = '/produtos/lista';
     const urlListaItens = '/vendas/lista-itens';
     const urlAddItem = '/vendas/novo-item';
 
     const btNovo = document.getElementById('bt-novo');
+    const btVoltar = document.getElementById('bt-voltar');
+
     const divNovo = document.getElementById('nova-venda');
     const tabelaVendas = document.getElementById('tb-vendas');
     const tabelaItens = document.getElementById('tb-itens-venda');
@@ -173,10 +177,14 @@
     const formulario = document.getElementById('form-venda');
     const formAddItem = document.getElementById('form-add-item');
     const divAddItem = document.getElementById('add-item-venda');
+    const divItens = document.getElementById('itens-venda');
     const selectProdutos = document.getElementById('produtos');
     const inputQuantidade = document.getElementById('quantidade');
     const btAddItem = document.getElementById('bt-add-item');
     const addItemVendaId = document.getElementById('addItemVendaId');
+    const inputValorTotal = document.getElementById('valorTotal');
+    const instrucao = document.getElementById('texto-salvar-venda');
+    const salvarCancelar = document.getElementById('salvar-cancelar');
 
     var editando = false;
     
@@ -209,19 +217,23 @@
         valorUnitario = item.valor_unitario;
         valorTotal = item.total;
         valorImposto = item.total_imposto;
+        valorComImposto = Number.parseFloat(valorFinal) + Number.parseFloat(valorImposto);
         tr.innerHTML = `
             <td>${item.quantidade}</td>
             <td>${item.produto.nome}</td>
             <td>R$ ${valorUnitario}</td>
             <td>R$ ${valorTotal}</td>
             <td>R$ ${valorImposto}</td>
-            <td>R$ ${valorFinal + valorImposto}</td>
+            <td>R$ ${valorComImposto.toFixed(2)}</td>
             <td class="acoes">
                 <a href="#" class="btn btn-sm btn-outline-danger bt-excluir">Excluir</a>
             </td>
         `;
         tbodyItens.appendChild(tr);
         tabelaItens.classList.remove('d-none');
+        addClickEvent(tr, '.bt-excluir', function(){
+
+        });
     }
 
     function criaLinha(venda, tbody){
@@ -234,8 +246,8 @@
         
         templateAcoes = document.getElementById('td-acoes');
         const tdAcoes = document.importNode(templateAcoes.content, true);
-        valorImposto = (venda.valor_total_impostos*100).toFixed(2);
-        valorTotal = (venda.valor_total*100).toFixed(2);
+        valorImposto = (venda.valor_total_impostos*1).toFixed(2);
+        valorTotal = Number.parseFloat(venda.valor_total) + Number.parseFloat(venda.valor_total_impostos);
 
         tdId.innerHTML = venda.id;
         tdData.innerHTML = venda.data;
@@ -250,6 +262,7 @@
         tbody.append(tr);
         addClickEvent(tr, '.bt-editar', function(){
             btNovo.style.display = 'none';
+            btVoltar.classList.remove('d-none');
             formulario.action = urlEditar;
             formulario.method = 'PUT';
             vendaId = this.parentElement.parentElement.getAttribute('data-id');
@@ -265,8 +278,6 @@
             divNovo.style.display = 'block';
             editando = true;
             addItemVendaId.value = vendaId;
-            const instrucao = document.getElementById('texto-salvar-venda');
-            const salvarCancelar = document.getElementById('salvar-cancelar');
 
             instrucao.classList.add('d-none');
             salvarCancelar.classList.add('d-none');            
@@ -283,7 +294,7 @@
                 formulario.method = 'DELETE';
                 vendaId = this.parentElement.parentElement.getAttribute('data-id');
                 sendData(urlExcluir, {id:vendaId}, function(dados){
-                    showToast('Sucesso', 'Tipo de venda excluido com sucesso');
+                    showToast('Sucesso', 'Venda excluido com sucesso');
                 }, 'DELETE');
                 preencheTabela()
             }
@@ -332,9 +343,9 @@
 
     inputQuantidade.addEventListener('change', (e)=>{
         const valor = document.getElementById('valor').value;
-        const quantidade = document.getElementById('quantidade').value;
-        const valorTotal = document.getElementById('valorTotal');
-        valorTotal.value = (valor*quantidade).toFixed(2);
+        const quantidade = Number.parseFloat(document.getElementById('quantidade').value);
+        const valorUnitario = Number.parseFloat(document.getElementById('valorUnitario').value);
+        inputValorTotal.value = (valorUnitario*quantidade).toFixed(2);
     });
 
     btSalvar.addEventListener('click', (e)=>{
@@ -352,7 +363,7 @@
             };
             sendData(actionForm, dados, function(r){
                 if(r.length > 0){
-                    showToast('Sucesso', `Tipo de produto salvo com sucesso`);
+                    showToast('Sucesso', `Venda salva com sucesso`);
                     btSalvar.disabled = false;
                     btSalvar.innerHTML = 'Salvar';
                     btSalvar.classList.remove("pulsante");
@@ -380,9 +391,20 @@
         formulario.vendaId.value = '';
         formulario.method = 'POST';
         btNovo.style.display = 'none';
+        btVoltar.style.display = 'inline-block';
+        instrucao.classList.remove('d-none');
+        salvarCancelar.classList.remove('d-none');
+        tbodyItens.innerHTML = '';
+        divAddItem.classList.add('d-none');
         tabelaVendas.style.display = 'none';
+        divItens.style.display = 'none';
         divNovo.style.display = 'block';
     });
+
+    btVoltar.addEventListener('click' , () => {
+        btVoltar.classList.add('d-none');
+        btCancelar.click();
+    } );
     
     document.addEventListener('DOMContentLoaded', () =>{
         loadData(urlListaProdutos).then(function(dados){
