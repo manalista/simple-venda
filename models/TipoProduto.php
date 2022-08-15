@@ -3,7 +3,6 @@
 class TipoProduto extends Model{
 
     private $table = "vendas.tipos_produtos";
-    private $joins = [];
 
     public function lista($filtros = []){
         return $this
@@ -16,5 +15,15 @@ class TipoProduto extends Model{
     public function inserir($dados){
         $dadosSalvos = $this->insert($this->table, $dados);
         return $dadosSalvos;
+    }
+
+    public function atualizar($dados){
+        $dadosSalvos = $this->update($this->table, $dados);
+        return $dadosSalvos;
+    }
+
+    public function excluir($dados){
+        $dadosExlcuidos = $this->delete($this->table, $dados);
+        return $dadosExlcuidos;
     }
 }

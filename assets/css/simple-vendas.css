@@ -1,0 +1,26 @@
+.pulsante {
+    animation: color_change 0.5s infinite alternate;
+}
+
+@keyframes color_change {
+    from {
+        color: #fff;
+    }
+
+    to {
+        color: #000;
+    }
+}
+
+th.acoes, td.acoes{
+    text-align: right;
+}
+
+tr td.acoes a{
+    opacity: 0.1;
+    transition: opacity 0.5s;
+}
+
+tr:hover td.acoes a{
+    opacity: 1;
+}

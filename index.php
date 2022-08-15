@@ -31,7 +31,14 @@ if(file_exists('routes.json')){
 }
 
 $route = $_SERVER['REQUEST_URI'];
-$http_method = $_SERVER['REQUEST_METHOD'];
+$request_method = $_SERVER['REQUEST_METHOD'];
+$http_method = $request_method;
+
+if($request_method == 'POST'){
+    if(isset($_POST['_method'])){
+        $http_method = strtoupper($_POST['_method']);
+    }
+}
 
 $pathController = "/";
 if($route !== "/"){
@@ -42,7 +49,7 @@ if($route !== "/"){
         $nameAction = substr($route, $pos+1);
     }
 }
-
+//die($http_method);
 $controller = $routes[$pathController]['classController'];
 $rotasController = $routes[$pathController];
 if(isset($rotasController[$http_method][$nameAction]) ?? false){
@@ -56,17 +63,24 @@ $controllerFound = new $controllerClass();
 $before = [$controllerFound, 'before'];
 $method = [$controllerFound, $action];
 $after = [$controllerFound, 'after'];
-if(is_callable($before)){
-    call_user_func($before);
-}
-if(is_callable($method)){
-    call_user_func($method);
-}else{
-    if(!$controller){
-        die("No controller was found!");
+try{
+    if(is_callable($before)){
+        call_user_func($before);
     }
-    die("$controllerClass->$action is not a callable!");
-}
-if(is_callable($after)){
-    call_user_func($after);
+    if(is_callable($method)){
+        call_user_func($method);
+    }else{
+        if(!$controller){
+            die("No controller was found!");
+        }
+        die("$controllerClass->$action is not a callable!");
+    }
+    if(is_callable($after)){
+        call_user_func($after);
+    }
+} catch (Exception $e) {
+    error_log($e->getMessage());
+    http_response_code(500);
+    require_once ROOT_FILES."/views/http/500.php";
+    exit(500);
 }

@@ -10,19 +10,6 @@
     #novo-tipo-produto{
         display: none;
     }
-
-    th.acoes, td.acoes{
-        text-align: right;
-    }
-
-    tr td.acoes a{
-        opacity: 0.25;
-        transition: opacity 0.5s;
-    }
-
-    tr:hover td.acoes a{
-        opacity: 1;
-    }
 </style>
 
 <div class="table-responsive">
@@ -42,7 +29,7 @@
 </div>
 
 <div id="novo-tipo-produto">
-    <form method="post" id="form-tipo-produto" action="/tipos-produtos/novo">
+    <form method="post" id="form-tipo-produto">
         <input type="hidden" name="tipoProdutoId" value="">
         <div class="mb-3">
             <label for="descricao" class="form-label">Descriçao</label>
@@ -68,13 +55,17 @@
 
 <template id="td-acoes">
     <td class="acoes">
-        <a href="#" class="btn btn-sm btn-outline-secondary" class="bt-editar">Editar</a>
-        <a href="#" class="btn btn-sm btn-outline-danger" class="bt-excluir">Excluir</a>
+        <a href="#" class="btn btn-sm btn-outline-secondary bt-editar">Editar</a>
+        <a href="#" class="btn btn-sm btn-outline-danger bt-excluir">Excluir</a>
     </td>
 </template>
 
 <script>
     const urlLista = '/tipos-produtos/lista';
+    const urlNovo = '/tipos-produtos/novo';
+    const urlExcluir = '/tipos-produtos/excluir';
+    const urlEditar = '/tipos-produtos/editar';
+
     const btNovo = document.getElementById('bt-novo');
     const divNovo = document.getElementById('novo-tipo-produto');
     const tabelaTipos = document.getElementById('tb-tipos-produtos');
@@ -82,16 +73,23 @@
     const btSalvar = document.getElementById('bt-salvar');
     const formulario = document.getElementById('form-tipo-produto');
 
+    var editando = false;
+    
+    function addClickEvent(element, selector, callback){
+        element.querySelector(selector).addEventListener('click', callback);
+    }
+
     function criaLinha(tipoProduto, tbody){
         const tr = document.createElement('tr');
+        tr.setAttribute("data-id", tipoProduto.id);
         const tdId = document.createElement('td');
         const tdDescricao = document.createElement('td');
         const tdImposto = document.createElement('td');
         templateAcoes = document.getElementById('td-acoes');
         const tdAcoes = document.importNode(templateAcoes.content, true);
-        tdId.innerHTML = tipo.id;
-        tdDescricao.innerHTML = tipo.descricao;
-        valorImposto = (tipo.valor_imposto*100).toFixed(2);
+        tdId.innerHTML = tipoProduto.id;
+        tdDescricao.innerHTML = tipoProduto.descricao;
+        valorImposto = (tipoProduto.valor_imposto*100).toFixed(2);
         tdImposto.innerHTML = `${valorImposto}%`;
 
         tr.appendChild(tdId)
@@ -99,29 +97,81 @@
         tr.appendChild(tdImposto);
         tr.appendChild(tdAcoes);
         tbody.append(tr);
+        addClickEvent(tr, '.bt-editar', function(){
+            btNovo.style.display = 'none';
+            formulario.action = urlEditar;
+            formulario.method = 'PUT';
+            tipoProdutoId = this.parentElement.parentElement.getAttribute('data-id');
+            descricao = this.parentElement.parentElement.children[1].innerHTML;
+            imposto = this.parentElement.parentElement.children[2].innerHTML.replace('%', '');
+            formulario.tipoProdutoId.value = tipoProdutoId;
+            formulario.descricao.value = descricao;
+            formulario.imposto.value = imposto;
+            tabelaTipos.style.display = 'none';
+            divNovo.style.display = 'block';
+            editando = true;
+        });
+        addClickEvent(tr, '.bt-excluir', function(){
+            if(confirm("Deseja realmente excluir este elemento?")){
+                formulario.method = 'DELETE';
+                tipoProdutoId = this.parentElement.parentElement.getAttribute('data-id');
+                sendData(urlExcluir, {id:tipoProdutoId}, function(dados){
+                    showToast('Sucesso', 'Tipo de produto excluido com sucesso');
+                }, 'DELETE');
+                loadData(urlLista, 'tiposProdutos', criaLinha);
+            }
+        });
+
     }
 
     btSalvar.addEventListener('click', (e)=>{
         e.preventDefault();
-        dados = {
-            id: formulario.tipoProdutoId.value,
-            descricao: formulario.descricao.value,
-            valor_imposto: formulario.imposto.value
-        };
-        
+        if(formulario.reportValidity()){
+            btSalvar.disabled = true;
+            actionForm = formulario.action;
+            btSalvar.innerHTML = 'Salvando...';
+            btSalvar.classList.add("pulsante");
+            btCancelar.style.display = 'none';
+            dados = {
+                id: formulario.tipoProdutoId.value,
+                descricao: formulario.descricao.value,
+                valor_imposto: formulario.imposto.value
+            };
+            sendData(actionForm, dados, function(r){
+                if(r.length > 0){
+                    showToast('Sucesso', `Tipo de produto salvo com sucesso`);
+                    btSalvar.disabled = false;
+                    btSalvar.innerHTML = 'Salvar';
+                    btSalvar.classList.remove("pulsante");
+                    btCancelar.style.display = 'inline-block';
+                    formulario.reset();
+                    if(editando){
+                        btCancelar.click();
+                        editando = false;
+                    }
+                }
+            }, formulario.getAttribute('method'));
+        }
     });
 
     btCancelar.addEventListener('click', () => {
         divNovo.style.display = 'none';
         tabelaTipos.style.display = 'table';
+        formulario.reset(); 
+        btNovo.style.display = 'inline-block';
+        loadData(urlLista, 'tiposProdutos', criaLinha);
     });
 
     btNovo.addEventListener('click', () =>{
+        formulario.action = urlNovo;
+        formulario.tipoProdutoId.value = '';
+        formulario.method = 'POST';
+        btNovo.style.display = 'none';
         tabelaTipos.style.display = 'none';
         divNovo.style.display = 'block';
     });
     
     document.addEventListener('DOMContentLoaded', () =>{
-       loadData(urlLista, criaLinha);
+       loadData(urlLista, 'tiposProdutos', criaLinha);
     });
 </script>

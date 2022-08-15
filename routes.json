@@ -13,13 +13,13 @@
             , "lista" : "listaJson"
         },
         "POST":{
-            "/": "novo"
+            "novo": "novo"
         }, 
         "PUT":{
-            "/": "editar"
+            "editr": "editar"
         },
         "DELETE":{
-            "/": "excluir"
+            "excluir": "excluir"
         }
     }
     , "tipos-produtos": {
@@ -29,13 +29,13 @@
             , "lista" : "listaJson"
         },
         "POST":{
-            "/": "novo"
+            "novo": "novo"
         }, 
         "PUT":{
-            "/": "editar"
+            "editar": "editar"
         },
         "DELETE":{
-            "/": "excluir"
+            "excluir": "excluir"
         }
     }
 }

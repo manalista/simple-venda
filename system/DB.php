@@ -27,10 +27,7 @@ class DB{
         if(!$result){
             return null;
         }
-        if(strpos($query, "INSERT") !== false){
-            return $prepared->fetchAll(PDO::FETCH_ASSOC);
-        }
-        return true;
+        return $prepared->fetchAll(PDO::FETCH_ASSOC);
     }
 
 

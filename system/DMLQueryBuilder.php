@@ -145,6 +145,28 @@ class DMLQueryBuilder{
         $sValues = implode(",", $values);
         return "INSERT INTO {$table} ({$sFields}) VALUES ({$sValues}) returning *";
     }
+    public function getDeleteQuery($table, $data){
+        $id = $data['id'];
+        return "DELETE FROM {$table} WHERE id = {$id} returning *";
+    }
+
+    public function getUpdateQuery($table, $data){
+        $types = [
+            'integer' => ''
+            , 'string' => "'"
+            , 'boolean' => ''
+            , 'double' => ''
+        ];
+        $fields = [];
+        $id = $data['id'];
+        unset($data['id']);        
+        foreach($data as $field => $value){
+            $type = gettype($value);
+            $fields[] = "\n    ".$field . " = " . $types[$type] . $value . $types[$type];
+        }
+        $sFields = implode(",", $fields);
+        return "UPDATE\n    {$table}\nSET{$sFields}\nWHERE\n    id = {$id} returning *";
+    }
 
     public function getSelectQuery(){
         $this->currentOperator = '';

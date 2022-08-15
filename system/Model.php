@@ -82,4 +82,16 @@ class Model{
         $result = $this->db->executa($query);
         return $result;
     }
+
+    public function update($tableName, $data){
+        $query = $this->dmlQueryBuilder->getUpdateQuery($tableName, $data);
+        $result = $this->db->executa($query);
+        return $result;
+    }
+
+    public function delete($tableName, $data){
+        $query = $this->dmlQueryBuilder->getDeleteQuery($tableName, $data);
+        $result = $this->db->executa($query);
+        return $result;
+    }
 }

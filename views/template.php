@@ -8,6 +8,7 @@
     <title>Simple Vendas</title>
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/css/simple-vendas.css" />
 
     <meta name="theme-color" content="#712cf9">
 
@@ -124,8 +125,8 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <?php if($search ?? false){ ?>
-            <input class="form-control form-control-dark w-100 rounded-0 border-0" 
-                type="text" placeholder="Search" aria-label="Search" id="search-field">
+        <input class="form-control form-control-dark w-100 rounded-0 border-0" type="text" placeholder="Search"
+            aria-label="Search" id="search-field">
         <?php } ?>
     </header>
 
@@ -157,17 +158,31 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2"><?= $titulo ?? 'Simple Vendas' ?></h1>
-                <?php if($botoes ?? false){ ?>
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <?= $botoes ?>
-                </div>
-                <?php } ?>
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2"><?= $titulo ?? 'Simple Vendas' ?></h1>
+                    <?php if($botoes ?? false){ ?>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <?= $botoes ?>
+                    </div>
+                    <?php } ?>
                 </div>
                 <?= $contentView ?>
             </main>
         </div>
+        <div class="toast-container bottom-0 end-0 p-3" id="toast-container">
+            <template id="template-toast">
+                <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <strong class="me-auto"></strong>
+                        <!-- small class="text-muted">just now</small -->
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Fechar"></button>
+                    </div>
+                    <div class="toast-body"></div>
+                </div>
+            </template>
+        </div>
+
     </div>
     <script src="/assets/js/bootstrap.bundle.min.js"
         integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous">

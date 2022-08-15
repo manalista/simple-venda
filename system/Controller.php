@@ -55,6 +55,25 @@ class Controller{
         return filter_var_array($_POST, $filters);
     }
 
+    public function filterGet($filters){
+        return filter_var_array($_GET, $filters);
+    }
+
+    public function filterPut($filters){
+        $putfp = fopen('php://input', 'r');
+        $putdata = '';
+        while($data = fread($putfp, 1024))
+            $putdata .= $data;
+        fclose($putfp);
+        $putstrings = explode('&', $putdata);
+        mb_parse_str($putdata, $putarray);
+        foreach($putstrings as $putvar){
+            [$key, $value] = explode('=', $putvar);
+            $_PUT[$key] = $value;
+        }
+        return filter_var_array($_PUT, $filters);
+    }
+    
     public function error404(){
         die("404");
     }
