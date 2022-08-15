@@ -27,4 +27,15 @@ class Produto extends Model{
         $dadosExlcuidos = $this->delete($this->table, $dados);
         return $dadosExlcuidos;
     }
+
+    public function getProduto($id){
+        $tipoProduto = new TipoProduto();
+        $produto = $this->select('*')
+                        ->from($this->table, 'p')
+                        ->where('id', '=', $id)
+                        ->fetch()[0];
+        $oTipoProduto = $tipoProduto->getTipoProduto($produto->id);
+        $produto->tipo = $oTipoProduto;
+        return $produto;
+    }
 }

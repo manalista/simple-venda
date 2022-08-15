@@ -18,6 +18,16 @@ class Venda extends Model{
         return $vendas;
     }
 
+    public function getVenda($id){
+        $itens = new ItemVenda();
+        $venda = $this->select('*')
+            ->from($this->table, 'v')
+            ->order('data', 'DESC')
+            ->fetch()[0];
+        $venda->itens = $itens->listaVenda($id);
+        return $venda;
+    }
+
     public function inserir($dados){
         $dadosSalvos = $this->insert($this->table, $dados);
         return $dadosSalvos;

@@ -16,6 +16,11 @@ class VendasController extends Controller{
                 ], 
                 'excluir' => [
                     'id' => FILTER_VALIDATE_INT
+                ], 
+                'novo-item' =>[
+                    'venda_id' => FILTER_VALIDATE_INT
+                    , 'quantidade' => FILTER_VALIDATE_INT
+                    , 'produto_id' => FILTER_VALIDATE_INT
                 ]
             ];
         
@@ -35,9 +40,54 @@ class VendasController extends Controller{
         $this->json($record);
     }
 
+    public function novoItem(){
+        $dados = $this->filterPost($this->filters['novo-item']);
+        
+        $produto = new Produto();
+        $venda = new Venda();
+        $item = new ItemVenda();
+
+        $oProduto = $produto->getProduto($dados['produto_id']);
+        
+        $oVenda = $venda->getVenda($dados['venda_id']);
+        $totalVenda = $oVenda->valor_total;
+        $totalImpostos = $oVenda->valor_total_impostos;
+
+        $valorImposto = $oProduto->valor * $oProduto->tipo->valor_imposto;
+        $venda->atualizar([
+            'valor_total_impostos' => $totalImpostos + $valorImposto
+            , 'valor_total' => $totalVenda + $oProduto->valor
+            , 'id' => $dados['venda_id']
+        ]);
+
+        $dados['valor_unitario'] = $oProduto->valor;
+        $dados['total'] = $oProduto->valor * $dados['quantidade'];
+        $dados['total_imposto'] = $dados['total'] * $oProduto->tipo->valor_imposto;
+        $record = $item->inserir($dados);
+        $this->json($record);
+    }
+
+    public function listaJsonItens(){
+        $dados = $this->filterGet(['venda_id' => FILTER_VALIDATE_INT]);
+        $item = new ItemVenda();
+        $lista = $item->listaVenda($dados['venda_id']);
+        $produto = new Produto();
+        foreach($lista as $item){
+            $oProduto = $produto->getProduto($item->produto_id);
+            $item->produto = $oProduto;
+        }
+        $this->json($lista);
+    }
+
+    public function show(){
+        $dados = $this->filterGet(['venda_id' => FILTER_VALIDATE_INT]);
+        $venda = $this->vendas->getVenda($dados['venda_id']);
+        $this->json($venda);
+    }
+
     public function editar(){
         $dados = $this->filterPost($this->filters['editar']);
-        $dados['valor_imposto'] = $dados['valor_imposto'] / 100;
+        $dados['valor_imposto'] = $dados['valor_imposto'];
         $record = $this->vendas->atualizar($dados);
         $this->json($record);
     }

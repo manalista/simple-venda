@@ -46,11 +46,12 @@ if($route !== "/"){
     $pathController = $pos ? substr($route, 1, ($pos-1)) : substr($route, 1);
     $nameAction = "/";
     if(strpos($route,"/",1) !== false){
-        $nameAction = substr($route, $pos+1);
+        $nameAction = explode('?', substr($route, $pos+1))[0];
     }
 }
 $controller = $routes[$pathController]['classController'];
 $rotasController = $routes[$pathController];
+
 if(isset($rotasController[$http_method][$nameAction]) ?? false){
     $action = $rotasController[$http_method][$nameAction];
 }else{

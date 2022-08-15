@@ -44,6 +44,7 @@
             "/" : "index"
             , "lista" : "listaJson"
             , "lista-itens" : "listaJsonItens"
+            , "venda" : "show"
         },
         "POST":{
             "nova": "nova"

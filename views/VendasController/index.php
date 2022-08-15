@@ -33,19 +33,19 @@
     <form method="post" id="form-venda">
         <input type="hidden" name="vendaId" value="">
         <div class="mb-3">
-            <label for="descricao" class="form-label">Data de Inicio</label>
+            <label for="descricao" class="form-label">Data</label>
             <input type="text" required class="form-control"
                     name="data"
                     disabled
                     id="descricao" placeholder="Data da venda">
         </div>
         <div class="mb-3">
-            <label for="imposto" class="form-label">Total</label>
+            <label for="valor" class="form-label">Total</label>
             <div class="mb-3 input-group">
             <span class="input-group-text">R$</span>
                 <input type="number" required
                     disabled
-                    class="form-control" id="imposto"
+                    class="form-control" id="valor"
                     name="valor" placeholder="Valor total"
                     placeholder="Total de impostos">
             </div>
@@ -68,54 +68,57 @@
             </div>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3" id="salvar-cancelar">
             <button type="button" class="btn btn-sm btn-outline-primary" id="bt-salvar">Salvar</button>
             <button type="button" class="btn btn-sm btn-outline-secondary" id="bt-cancelar">Cancelar</button>
         </div>
 
-        <div id="add-item-venda mb-3" class="d-none">
-            <div class="row">
-                <div class="col-md-4">
-                    <label for="descricao" class="form-label">Produto</label>
-                    <select class="form-control" name="produto" id="produtos">
-                        <option value="">Selecione um produto</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label for="quantidade" class="form-label">Quantidade</label>
-                    <input type="number" required
-                        class="form-control" id="quantidade"
-                        disabled
-                        min="1"
-                        name="quantidade" placeholder="Quantidade">
-                </div>
-                <div class="col-md-3">
-                    <label for="valor" class="form-label">Valor Unitário</label>
-                    <div class="input-group">
-                        <span class="input-group-text">R$</span>
-                        <input type="number" required
-                            class="form-control" id="valor" disabled
-                            name="valor" placeholder="Valor">
+        <div id="add-item-venda" class="d-none mb-3">
+            <form id="form-add-item" action="/vendas/add-item" method="POST">
+                <input type="hidden" name="itemVendaId" value="" id="addItemVendaId">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="descricao" class="form-label">Produto</label>
+                        <select class="form-control" name="produto" id="produtos">
+                            <option value="">Selecione um produto</option>
+                        </select>
                     </div>
-                </div>
-
-                <div class="col-md-2">
-                    <label for="valor" class="form-label">Valor</label>
-                    <div class="input-group">
-                        <span class="input-group-text">R$</span>
+                    <div class="col-md-2">
+                        <label for="quantidade" class="form-label">Quantidade</label>
                         <input type="number" required
-                            class="form-control" id="valorTotal" disabled
-                            name="valor" placeholder="Valor">
+                            class="form-control" id="quantidade"
+                            disabled
+                            min="1"
+                            name="quantidade" placeholder="Quantidade">
                     </div>
-                </div>
-                
-                <div class="col-md-1">
-                    <label for="bt-add-item" class="form-label">&nbsp;</label>
-                    <button type="button" id="bt-add-item" disabled
-                            class="form-control btn btn-outline-primary">+</button>
-                </div>
+                    <div class="col-md-3">
+                        <label for="valor" class="form-label">Valor Unitário</label>
+                        <div class="input-group">
+                            <span class="input-group-text">R$</span>
+                            <input type="number" required
+                                class="form-control" id="valorUnitario" disabled
+                                name="valorUnitario" placeholder="Valor">
+                        </div>
+                    </div>
 
-            </div>
+                    <div class="col-md-2">
+                        <label for="valor" class="form-label">Valor</label>
+                        <div class="input-group">
+                            <span class="input-group-text">R$</span>
+                            <input type="number" required
+                                class="form-control" id="valorTotal" disabled
+                                name="valorTotal" placeholder="Valor">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-1">
+                        <label for="bt-add-item" class="form-label">&nbsp;</label>
+                        <button type="button" id="bt-add-item" disabled
+                                class="form-control btn btn-outline-primary">+</button>
+                    </div>
+
+                </div>
+            </form>
         </div>
 
         <div id="itens-venda" class="mb-3">
@@ -149,21 +152,31 @@
 </template>
 
 <script>
+    let itensVenda;
     const urlLista = '/vendas/lista';
+    const urlDetalhesVenda = '/vendas/show';
     const urlNovo = '/vendas/novo';
     const urlExcluir = '/vendas/excluir';
     const urlEditar = '/vendas/editar';
     const urlListaProdutos = '/produtos/lista';
+    const urlListaItens = '/vendas/lista-itens';
+    const urlAddItem = '/vendas/novo-item';
 
     const btNovo = document.getElementById('bt-novo');
     const divNovo = document.getElementById('nova-venda');
     const tabelaVendas = document.getElementById('tb-vendas');
+    const tabelaItens = document.getElementById('tb-itens-venda');
     const tbody = tabelaVendas.querySelector("tbody");
+    const tbodyItens = tabelaItens.querySelector("tbody");
     const btCancelar = document.getElementById('bt-cancelar');
     const btSalvar = document.getElementById('bt-salvar');
     const formulario = document.getElementById('form-venda');
+    const formAddItem = document.getElementById('form-add-item');
+    const divAddItem = document.getElementById('add-item-venda');
     const selectProdutos = document.getElementById('produtos');
     const inputQuantidade = document.getElementById('quantidade');
+    const btAddItem = document.getElementById('bt-add-item');
+    const addItemVendaId = document.getElementById('addItemVendaId');
 
     var editando = false;
     
@@ -174,8 +187,8 @@
     function preencheTabela(){
         loadData(urlLista).then(function(dados){
             tbody.innerHTML = '';
-            dados.forEach(produto => {
-                criaLinha(produto, tbody);
+            dados.forEach(venda => {
+                criaLinha(venda, tbody);
             });
         });
     }
@@ -188,9 +201,32 @@
         select.appendChild(option);
     }
 
-    function criaLinha(produto, tbody){
+    function criaLinhaItem(item, tbodyItens){
+        var tr = document.createElement('tr');
+        
+        tr.setAttribute('data-id', item.id);
+        valorFinal = item.valor_unitario * item.quantidade;
+        valorUnitario = item.valor_unitario;
+        valorTotal = item.total;
+        valorImposto = item.total_imposto;
+        tr.innerHTML = `
+            <td>${item.quantidade}</td>
+            <td>${item.produto.nome}</td>
+            <td>R$ ${valorUnitario}</td>
+            <td>R$ ${valorTotal}</td>
+            <td>R$ ${valorImposto}</td>
+            <td>R$ ${valorFinal + valorImposto}</td>
+            <td class="acoes">
+                <a href="#" class="btn btn-sm btn-outline-danger bt-excluir">Excluir</a>
+            </td>
+        `;
+        tbodyItens.appendChild(tr);
+        tabelaItens.classList.remove('d-none');
+    }
+
+    function criaLinha(venda, tbody){
         const tr = document.createElement('tr');
-        tr.setAttribute("data-id", produto.id);
+        tr.setAttribute("data-id", venda.id);
         const tdId = document.createElement('td');
         const tdData = document.createElement('td');
         const tdValorTotal = document.createElement('td');
@@ -198,11 +234,11 @@
         
         templateAcoes = document.getElementById('td-acoes');
         const tdAcoes = document.importNode(templateAcoes.content, true);
-        valorImposto = (produto.valor_total_impostos*100).toFixed(2);
-        valorTotal = (produto.valor_total*100).toFixed(2);
+        valorImposto = (venda.valor_total_impostos*100).toFixed(2);
+        valorTotal = (venda.valor_total*100).toFixed(2);
 
-        tdId.innerHTML = produto.id;
-        tdData.innerHTML = produto.data;
+        tdId.innerHTML = venda.id;
+        tdData.innerHTML = venda.data;
         tdValorTotal.innerHTML = `R$ ${valorTotal}`;
         tdValorImpostos.innerHTML = `R$ ${valorImposto}`;
 
@@ -221,19 +257,33 @@
             total = this.parentElement.parentElement.children[2].innerHTML.replace('R$ ', '');
             impostos = this.parentElement.parentElement.children[3].innerHTML.replace('R$ ', '');
 
+            formulario.vendaId = vendaId;
             formulario.data.value = data;
-            formulario.total.value = Number.parseFloat(total);
+            formulario.valor.value = Number.parseFloat(total);
             formulario.imposto.value = Number.parseFloat(impostos);
             tabelaVendas.style.display = 'none';
             divNovo.style.display = 'block';
             editando = true;
+            addItemVendaId.value = vendaId;
+            const instrucao = document.getElementById('texto-salvar-venda');
+            const salvarCancelar = document.getElementById('salvar-cancelar');
+
+            instrucao.classList.add('d-none');
+            salvarCancelar.classList.add('d-none');            
+            divAddItem.classList.remove('d-none');
+            loadData(`${urlListaItens}?venda_id=${vendaId}`).then(function(dados){
+                itensVenda = dados;
+                dados.forEach(item => {
+                    criaLinhaItem(item, tbodyItens);
+                });
+            });
         });
         addClickEvent(tr, '.bt-excluir', function(){
             if(confirm("Deseja realmente excluir este elemento?")){
                 formulario.method = 'DELETE';
                 vendaId = this.parentElement.parentElement.getAttribute('data-id');
                 sendData(urlExcluir, {id:vendaId}, function(dados){
-                    showToast('Sucesso', 'Tipo de produto excluido com sucesso');
+                    showToast('Sucesso', 'Tipo de venda excluido com sucesso');
                 }, 'DELETE');
                 preencheTabela()
             }
@@ -243,13 +293,11 @@
 
     selectProdutos.addEventListener('change', function(){
         const produtoId = this.value;
-        console.log(produtoId);
         const selected = this.querySelector('option[value="'+produtoId+'"]');
         const valor = selected.getAttribute('data-valor');
-        const inputValor = document.getElementById('valor');
+        const inputValor = document.getElementById('valorUnitario');
         const inputQuantidade = document.getElementById('quantidade');        
         const inputTotal = document.getElementById('valorTotal');
-        const btAddItem = document.getElementById('bt-add-item');
         if(produtoId){
             inputQuantidade.disabled = false;
             btAddItem.disabled = false;            
@@ -263,6 +311,23 @@
             inputValor.value = 0;
             inputTotal.value = 0;
         }
+    });
+
+    btAddItem.addEventListener('click', function(){
+        sendData(urlAddItem, {
+            venda_id: addItemVendaId.value,
+            produto_id: selectProdutos.value,
+            quantidade: inputQuantidade.value,
+        }, function(dados){
+            showToast('Sucesso', 'Item adicionado com sucesso');
+            tbodyItens.innerHTML = '';
+            loadData(`${urlListaItens}?venda_id=${addItemVendaId.value}`).then(function(dados){
+                itensVenda = dados;
+                dados.forEach(item => {
+                    criaLinhaItem(item, tbodyItens);
+                });
+            });
+        }, 'POST');
     });
 
     inputQuantidade.addEventListener('change', (e)=>{
