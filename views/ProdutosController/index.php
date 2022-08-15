@@ -32,7 +32,7 @@
 
 <div id="novo-produto">
     <form method="post" id="form-produto">
-        <input type="hidden" name="produtoId" value="">
+        <input type="hidden" name="id" value="">
         <div class="mb-3">
             <label for="nome" class="form-label">Nome</label>
             <input type="text" required class="form-control"
@@ -54,7 +54,7 @@
 
         <div class="mb-3">
             <label for="tipo-produto">Tipo de produto</label>
-            <select name="produtoId" id="tipo-produto"  class="form-select" >
+            <select name="tipo_id" id="tipo-produto"  class="form-select" >
                 <option value="">Selecione um tipo de produto</option>
             </select>
         </div>
@@ -83,6 +83,7 @@
     const btNovo = document.getElementById('bt-novo');
     const divNovo = document.getElementById('novo-produto');
     const tabelaProdutos = document.getElementById('tb-produtos');
+    const tbody = tabelaProdutos.querySelector("tbody");
     const btCancelar = document.getElementById('bt-cancelar');
     const btSalvar = document.getElementById('bt-salvar');
     const formulario = document.getElementById('form-produto');
@@ -93,6 +94,16 @@
     function addClickEvent(element, selector, callback){
         element.querySelector(selector).addEventListener('click', callback);
     }
+
+    function preencheTabela(){
+        loadData(urlLista).then(function(dados){
+            tbody.innerHTML = '';
+            dados.forEach(tipoProduto => {
+                criaLinha(tipoProduto, tbody);
+            });
+        });
+    }
+
     function criaOption(tipoProduto, select){
         var option = document.createElement('option');
         option.value = tipoProduto.id;
@@ -112,10 +123,11 @@
         const tdAcoes = document.importNode(templateAcoes.content, true);
         tdId.innerHTML = produto.id;
         tdNome.innerHTML = produto.nome;
-        valorvalor = (produto.valor*100).toFixed(2);        
-        tdvalor.innerHTML = `${valorvalor}%`;
-        tdtipo.innerHTML = produto.tipo.descricao;
+        valorvalor = produto.valor;
 
+        tdvalor.innerHTML = `R$ ${valorvalor}`;
+        tdtipo.innerHTML = produto.tipo.descricao;
+        selectTipos.value = produto.tipo.id;
         tr.appendChild(tdId)
         tr.appendChild(tdNome)
         tr.appendChild(tdvalor);
@@ -128,12 +140,15 @@
             formulario.method = 'PUT';
             produtoId = this.parentElement.parentElement.getAttribute('data-id');
             nome = this.parentElement.parentElement.children[1].innerHTML;
-            valor = this.parentElement.parentElement.children[2].innerHTML.replace('%', '');
+            valor = this.parentElement.parentElement.children[2].innerHTML.replace('R$', '');
+            console.log(`Valor ${valor}`);
             tipoProdutoId = this.parentElement.getAttribute('data-tipo-produto-id');
-            formulario.produtoId.value = produtoId;
+            formulario.id.value = produtoId;
             formulario.nome.value = nome;
-            formulario.valor.value = valor;
-            formulario.produtoId.value = tipoProdutoId;
+            formulario.valor.value = Number.parseFloat(valor);
+            selectTipos.value = tipoProdutoId;
+            option = selectTipos.querySelector("option[value='"+produto.tipo.id+"']");
+            option.selected = true;
             tabelaProdutos.style.display = 'none';
             divNovo.style.display = 'block';
             editando = true;
@@ -160,10 +175,10 @@
             btSalvar.classList.add("pulsante");
             btCancelar.style.display = 'none';
             dados = {
-                id: formulario.produtoId.value,
+                id: formulario.id.value,
                 nome: formulario.nome.value,
                 valor: formulario.valor.value,
-                produtoId: formulario.produtoId.value
+                tipo_id: formulario.tipo_id.value
             };
             sendData(actionForm, dados, function(r){
                 if(r.length > 0){
@@ -176,6 +191,7 @@
                     if(editando){
                         btCancelar.click();
                         editando = false;
+                        preencheTabela();
                     }
                 }
             }, formulario.getAttribute('method'));
@@ -187,12 +203,11 @@
         tabelaProdutos.style.display = 'table';
         formulario.reset(); 
         btNovo.style.display = 'inline-block';
-        loadData(urlLista, 'produtos', criaLinha);
     });
 
     btNovo.addEventListener('click', () =>{
         formulario.action = urlNovo;
-        formulario.produtoId.value = '';
+        formulario.id.value = '';
         formulario.method = 'POST';
         btNovo.style.display = 'none';
         tabelaProdutos.style.display = 'none';
@@ -205,10 +220,6 @@
                 criaOption(tipoProduto, selectTipos);
             });
         });
-        loadData(urlLista).then(function(dados){
-            dados.forEach(produto => {
-                criaLinha(produto, tabelaProdutos);
-            });
-        });
+        preencheTabela();
     });
 </script>

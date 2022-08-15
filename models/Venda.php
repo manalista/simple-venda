@@ -1,16 +1,21 @@
 <?php 
 
-class Produto extends Model{
+class Venda extends Model{
 
-    private $table = "vendas.produtos";
+    private $table = "vendas.vendas";
+    private $itens;
 
-    public function lista($filtros = []){
-        
-        return $this
-                    ->select('*')
-                    ->from($this->table, 'p')
-                    ->order('nome')
-                    ->fetch();
+    public function lista(){
+        $itens = new ItemVenda();
+        $vendas = $this->select('*')
+            ->from($this->table, 'v')
+            ->order('data', 'DESC')
+            ->fetch();
+
+        foreach($vendas as $venda){
+            $venda->itens = $itens->listaVenda($venda->id);
+        }
+        return $vendas;
     }
 
     public function inserir($dados){

@@ -16,7 +16,7 @@
             "novo": "novo"
         }, 
         "PUT":{
-            "editr": "editar"
+            "editar": "editar"
         },
         "DELETE":{
             "excluir": "excluir"
@@ -36,6 +36,26 @@
         },
         "DELETE":{
             "excluir": "excluir"
+        }
+    }
+    , "vendas": {
+        "classController": "Vendas",
+        "GET": {
+            "/" : "index"
+            , "lista" : "listaJson"
+            , "lista-itens" : "listaJsonItens"
+        },
+        "POST":{
+            "nova": "nova"
+            , "novo-item" : "novoItem"
+        }, 
+        "PUT":{
+            "editar": "editar"
+            , "editar-item" : "editarItem"
+        },
+        "DELETE":{
+            "excluir": "excluir"
+            , "excluir-item" : "excluirItem"
         }
     }
 }

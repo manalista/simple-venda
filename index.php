@@ -49,7 +49,6 @@ if($route !== "/"){
         $nameAction = substr($route, $pos+1);
     }
 }
-//die($http_method);
 $controller = $routes[$pathController]['classController'];
 $rotasController = $routes[$pathController];
 if(isset($rotasController[$http_method][$nameAction]) ?? false){
@@ -57,7 +56,6 @@ if(isset($rotasController[$http_method][$nameAction]) ?? false){
 }else{
     $action = 'error404';
 }
-
 $controllerClass = $controller . 'Controller';
 $controllerFound = new $controllerClass();
 $before = [$controllerFound, 'before'];

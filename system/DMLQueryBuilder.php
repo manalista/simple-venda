@@ -184,6 +184,12 @@ class DMLQueryBuilder{
         }
 
         $this->query = "SELECT\n{$fieldsString}{$fromString}{$whereString}{$orderString}";
+        $this->fromString = "";
+        $this->fields = [];
+        $this->whereContent = [];
+        $this->orderContent = [];
+        $this->currentOperator = "";
+        $this->alias = "";
         return $this->query;
     }
 

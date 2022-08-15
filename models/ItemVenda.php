@@ -1,15 +1,16 @@
 <?php 
 
-class Produto extends Model{
+class ItemVenda extends Model{
 
-    private $table = "vendas.produtos";
+    private $table = "vendas.itens_vendas";
+    private $joins = [];
 
-    public function lista($filtros = []){
-        
+    public function listaVenda($vendaId){
         return $this
                     ->select('*')
-                    ->from($this->table, 'p')
-                    ->order('nome')
+                    ->from($this->table, 'iv')
+                    ->where('venda_id', '=', $vendaId)
+                    //->order('nome')
                     ->fetch();
     }
 

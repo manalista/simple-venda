@@ -39,11 +39,14 @@
         </div>
         <div class="mb-3">
             <label for="imposto" class="form-label">Imposto</label>
-            <input type="number" required
+            <div class="mb-3 input-group">
+                <input type="number" required
                     class="form-control" id="imposto"
                     name="imposto" 
                     min="0" step="0.01"
                     placeholder="Alícota de imposto para este tipo de produtos">
+                <span class="input-group-text">%</span>
+            </div>
         </div>
 
         <div class="mb-3">
@@ -69,6 +72,7 @@
     const btNovo = document.getElementById('bt-novo');
     const divNovo = document.getElementById('novo-tipo-produto');
     const tabelaTipos = document.getElementById('tb-tipos-produtos');
+    const tbody = tabelaTipos.querySelector("tbody");
     const btCancelar = document.getElementById('bt-cancelar');
     const btSalvar = document.getElementById('bt-salvar');
     const formulario = document.getElementById('form-tipo-produto');
@@ -77,6 +81,15 @@
     
     function addClickEvent(element, selector, callback){
         element.querySelector(selector).addEventListener('click', callback);
+    }
+
+    function preencheTabela(){
+        loadData(urlLista).then(function(dados){
+            tbody.innerHTML = '';
+            dados.forEach(tipoProduto => {
+                criaLinha(tipoProduto, tbody);
+            });
+        });
     }
 
     function criaLinha(tipoProduto, tbody){
@@ -118,7 +131,7 @@
                 sendData(urlExcluir, {id:tipoProdutoId}, function(dados){
                     showToast('Sucesso', 'Tipo de produto excluido com sucesso');
                 }, 'DELETE');
-                loadData(urlLista, 'tiposProdutos', criaLinha);
+                preencheTabela()
             }
         });
 
@@ -148,6 +161,7 @@
                     if(editando){
                         btCancelar.click();
                         editando = false;
+                        preencheTabela();
                     }
                 }
             }, formulario.getAttribute('method'));
@@ -159,7 +173,6 @@
         tabelaTipos.style.display = 'table';
         formulario.reset(); 
         btNovo.style.display = 'inline-block';
-        loadData(urlLista, 'tiposProdutos', criaLinha);
     });
 
     btNovo.addEventListener('click', () =>{
@@ -172,6 +185,6 @@
     });
     
     document.addEventListener('DOMContentLoaded', () =>{
-       loadData(urlLista, 'tiposProdutos', criaLinha);
+       preencheTabela();
     });
 </script>

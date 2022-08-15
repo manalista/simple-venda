@@ -1,25 +1,22 @@
 <?php 
 
-class ProdutosController extends Controller{
+class VendasController extends Controller{
 
+    private $venda;
     private $produto;
-    private $tipoProduto;
     private $filters;
 
     public function __construct() {
         $this->produto = new Produto();
-        $this->tipoProduto = new TipoProduto();
+        $this->venda = new Venda();
         $this->filters = [
             'novo' => [
-                'nome' => FILTER_SANITIZE_SPECIAL_CHARS
-                , 'valor' =>  FILTER_VALIDATE_FLOAT
-                , 'tipo_id' =>  FILTER_VALIDATE_INT
+                'data_hora_inicio' => FILTER_SANITIZE_SPECIAL_CHARS
             ], 
             'editar' => [
                 'id' => FILTER_VALIDATE_INT
-                , 'nome' => FILTER_SANITIZE_SPECIAL_CHARS
-                , 'valor' =>  FILTER_VALIDATE_FLOAT
-                , 'tipo_id' =>  FILTER_VALIDATE_INT
+                , 'data_hora_inicio' => FILTER_SANITIZE_SPECIAL_CHARS
+                , 'data_hora_fim' =>  FILTER_VALIDATE_FLOAT
             ], 
             'excluir' => [
                 'id' => FILTER_VALIDATE_INT
@@ -35,7 +32,7 @@ class ProdutosController extends Controller{
     }
 
     public function listaJson(){
-        $lista = $this->produto->lista();
+        $lista = $this->venda->lista();
         $listaTipos = $this->tipoProduto->lista();
         
         foreach($lista as $produto){
@@ -49,20 +46,20 @@ class ProdutosController extends Controller{
     public function novo(){
         $dados = $this->filterPost($this->filters['novo']);
         $dados['valor'] = $dados['valor'];
-        $record = $this->produto->inserir($dados);
+        $record = $this->venda->inserir($dados);
         $this->json($record);
     }
 
     public function editar(){
         $dados = $this->filterPost($this->filters['editar']);
         $dados['valor'] = $dados['valor'];
-        $record = $this->produto->atualizar($dados);
+        $record = $this->venda->atualizar($dados);
         $this->json($record);
     }
 
     public function excluir(){
         $dados = $this->filterPost($this->filters['excluir']);
-        $record = $this->produto->excluir($dados);
+        $record = $this->venda->excluir($dados);
         $this->json($record);
     }
 }
